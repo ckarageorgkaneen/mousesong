@@ -1,0 +1,106 @@
+# 240221
+
+# Given a trained sleap model, we are going to process an video to undisort and track the animal
+
+# For camera intrinsics and cage coordinates parameters, we will use this folder:
+# usv_calls/08_solosocial/cam_params/
+
+# For tracking, use following model:
+# /mnt/labNAS/usv_calls/sleap_models/240124_solosocial_01/models/240202_solosocial_240202_160215.single_instance.n=950
+
+# on Windows: -------------
+cd C:/Users/xizheng/Projects/div_cage_analysis/scripts/preprocess_video/
+conda activate behavior
+
+#  draw box on first frame(s) to see if the undistort and cage coords work well, as a quick quality check
+
+python draw_box_frame.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000.mp4 `
+Z:/usv_calls/08_solosocial/cam_params/intrinsics_21415940.mat `
+Z:/usv_calls/08_solosocial/cam_params/cage_coords_21415940_corrected.yml `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_qc.png
+python draw_box_frame.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000.mp4 `
+Z:/usv_calls/08_solosocial/cam_params/intrinsics_21428187.mat `
+Z:/usv_calls/08_solosocial/cam_params/cage_coords_21428187_corrected.yml `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_qc.png
+
+# undistort video(s)
+
+python undistort_video.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000.mp4 `
+Z:/usv_calls/08_solosocial/cam_params/intrinsics_21415940.mat `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.mp4
+python undistort_video.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000.mp4 `
+Z:/usv_calls/08_solosocial/cam_params/intrinsics_21428187.mat `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.mp4
+
+# on Acadia: -------------
+screen
+
+cd /home/xizheng/Documents/Projects/div_cage_analysis/scripts/preprocess_video/
+conda activate sleap
+
+# track the animal using trained sleap model
+
+sleap-track \
+-m /mnt/labNAS/usv_calls/sleap_models/240124_solosocial_01/models/240202_solosocial_240202_160215.single_instance.n=950 \
+-o /mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.slp \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.mp4
+sleap-track \
+-m /mnt/labNAS/usv_calls/sleap_models/240124_solosocial_01/models/240202_solosocial_240202_160215.single_instance.n=950 \
+-o /mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.slp \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.mp4
+
+;
+
+# export pose in h5 file
+
+sleap-convert \
+--format analysis \
+-o /mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.h5 \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.slp
+sleap-convert \
+--format analysis \
+-o /mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.h5 \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.slp
+
+;
+
+# interpolate h5 file and save as a mat file
+
+python sleap_interpolate_missing_data.py \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.h5
+python sleap_interpolate_missing_data.py \
+/mnt/labNAS/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.h5
+
+;
+
+# on Windows: -------------
+conda activate behavior
+cd C:/Users/xizheng/Projects/div_cage_analysis/scripts/preprocess_video/
+
+# export tracks of both animals in world coordinates
+
+python export_sleap_common_world_coords.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.interpolate.mat `
+Z:/usv_calls/08_solosocial/cam_params/cage_coords_21415940_corrected.yml `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.interpolate.mat `
+Z:/usv_calls/08_solosocial/cam_params/cage_coords_21428187_corrected.yml `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/process_video/2023-09-29-101126_cam0_00000.common_coords.mat
+
+# make sleap videos with skeletons overlayed (optional)
+
+cd C:/Users/xizheng/Projects/div_cage_analysis/scripts/make_video/
+
+python make_vid_sleap.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.mp4 `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.interpolate.mat `
+green `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/left/2023-09-29-101126_cam0_00000_undistort.pose.mp4
+python make_vid_sleap.py `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.mp4 `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.interpolate.mat `
+magenta `
+Z:/usv_calls/08_solosocial/06_20230928_um006_uf003_mf/02_social/original_video/right/2023-09-29-101126_cam1_00000_undistort.pose.mp4
