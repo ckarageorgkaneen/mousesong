@@ -2,9 +2,9 @@
 #
 # read the export data from sleap
 # interpolate missing data
-# 
+#
 # https://sleap.ai/notebooks/Analysis_examples.html
-# 
+#
 # Mike Zheng
 # 220122
 
@@ -15,6 +15,7 @@ import numpy as np
 
 from scipy.interpolate import interp1d
 from scipy.io import savemat
+
 
 def fill_missing(Y, kind="linear"):
     """Fills missing values independently along each dimension after the first."""
@@ -36,7 +37,7 @@ def fill_missing(Y, kind="linear"):
         # Fill missing
         xq = np.flatnonzero(np.isnan(y))
         y[xq] = f(xq)
-        
+
         # Fill leading or trailing NaNs with the nearest non-NaN values
         mask = np.isnan(y)
         y[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), y[~mask])
@@ -49,15 +50,15 @@ def fill_missing(Y, kind="linear"):
 
     return Y
 
-def main(argv):
 
+def main(argv):
     if len(argv) < 2:
-        print(f'Usage: python {argv[0]} <h5 filename>')
+        print(f"Usage: python {argv[0]} <h5 filename>")
         exit(0)
-    
+
     filename = argv[1]
 
-    output_filename = filename[:-3]+'.interpolate.mat'
+    output_filename = filename[:-3] + ".interpolate.mat"
 
     ## Loading the data
 
@@ -96,10 +97,8 @@ def main(argv):
     new_locations = fill_missing(locations)
 
     ## save new locations to mat file
-    savemat(output_filename, {'locations':new_locations})
-
+    savemat(output_filename, {"locations": new_locations})
 
 
 if __name__ == "__main__":
     main(sys.argv)
-
