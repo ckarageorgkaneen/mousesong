@@ -2,6 +2,8 @@
 
 Modeling singing mouse behavior.
 
+![](./logo.png)
+
 ## Install
 
 1. Create conda environment:
