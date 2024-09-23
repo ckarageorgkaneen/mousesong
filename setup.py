@@ -12,7 +12,7 @@ setuptools.setup(
     install_requires=[
         "sleap[pypi]==1.4.1a2",
         "opencv-python",
-        "ffmpeg",
+        "ffmpeg-python",
         "pyyaml",
         "scipy",
     ],
