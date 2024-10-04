@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import scipy.io
+import numpy as np
+
+VIDEO_IDS = list(range(5))
+OUTFILE = "/mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/02_20230919_um008_uf003_mf/02_social/process_video/2023-09-20-100934_cam0_00000_to_00004.concat_common_coords.mat"
+MAT_FILE_PATHS = [
+    f"/mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/02_20230919_um008_uf003_mf/02_social/process_video/2023-09-20-100934_cam0_0000{id_}.common_coords.mat"
+    for id_ in VIDEO_IDS
+]
+l_locations_world_list = []
+r_locations_world_list = []
+for mat_file in MAT_FILE_PATHS:
+    locations_world = scipy.io.loadmat(mat_file, squeeze_me=True)
+    l_locations_world_list.append(locations_world["l_locations_world"])
+    r_locations_world_list.append(locations_world["r_locations_world"])
+print("Concatenating...")
+print(MAT_FILE_PATHS)
+l_locations_world_concat = np.concatenate(l_locations_world_list, axis=0)
+r_locations_world_concat = np.concatenate(r_locations_world_list, axis=0)
+scipy.io.savemat(
+    OUTFILE,
+    {
+        "l_locations_world": l_locations_world_concat,
+        "r_locations_world": r_locations_world_concat,
+    },
+)
+print(f"Saved {OUTFILE}.")
