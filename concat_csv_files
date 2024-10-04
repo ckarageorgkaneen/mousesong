@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import pandas as pd
+
+VIDEO_IDS = list(range(5))
+OUTFILE = "/mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/02_20230919_um008_uf003_mf/02_social/process_audio/all_song_detections/concat_song_detections.csv"
+CSV_FILE_PATHS = [
+    f"/mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/02_20230919_um008_uf003_mf/02_social/process_audio/all_song_detections/000002{id_}/song_detections.csv"
+    for id_ in VIDEO_IDS
+]
+print("Stacking...")
+print(CSV_FILE_PATHS)
+df_list = [pd.read_csv(csv_file) for csv_file in CSV_FILE_PATHS]
+concatenated_df = pd.concat(df_list, axis=0)
+concatenated_df.to_csv(OUTFILE, index=False)
+print(f"Saved {OUTFILE}.")
