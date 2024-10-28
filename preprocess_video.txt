@@ -66,39 +66,49 @@ sleap-convert \
 -o /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.h5 \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.slp
 
-###################################################
-## 5. Interpolate h5 file and save as a mat file ##
-###################################################
+#####################################################################
+## 5. Interpolate h5 file low score points and save as new h5 file ##
+#####################################################################
 
-python sleap_interpolate_missing_data.py \
+python sleap_interpolate_low_confidence_points.py \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.h5
 
-python sleap_interpolate_missing_data.py \
+python sleap_interpolate_low_confidence_points.py \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.h5
 
+################################################################
+## 6. Interpolate h5 file missing data and save as a mat file ##
+################################################################
+
+python sleap_interpolate_missing_data.py \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.no_low_conf.h5
+
+python sleap_interpolate_missing_data.py \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.no_low_conf.h5
+
 ###########################################################
-## 6. Export tracks of both animals in world coordinates ##
+## 7. Export tracks of both animals in world coordinates ##
 ###########################################################
 
 python export_sleap_common_world_coords.py \
-/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.interpolate.mat \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.no_low_conf.interpolate.mat \
 /mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/cam_params/cage_coords_21415940_corrected.yml \
-/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.interpolate.mat \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.no_low_conf.interpolate.mat \
 /mnt/labNAS/Chris/mousesong/usv_calls/08_solosocial/cam_params/cage_coords_21428187_corrected.yml \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/2023-09-29-101126_cam0_00000.common_coords.mat
 
 ##############################################################
-## 7. Make sleap videos with skeletons overlayed (optional) ##
+## 8. Make sleap videos with skeletons overlayed (optional) ##
 ##############################################################
 
 python make_vid_sleap.py \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.mp4 \
-/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.interpolate.mat \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.predictions.analysis.no_low_conf.interpolate.mat \
 green \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/left/2023-09-29-101126_cam0_00000_undistort.pose.mp4
 
 python make_vid_sleap.py \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.mp4 \
-/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.interpolate.mat \
+/mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.predictions.analysis.no_low_conf.interpolate.mat \
 magenta \
 /mnt/labNAS/Chris/mousesong/behavior/div_cage/231226_UM008_UF003_1/process_video/right/2023-09-29-101126_cam1_00000_undistort.pose.mp4
