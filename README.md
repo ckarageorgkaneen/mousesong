@@ -35,3 +35,4 @@ pip install -e .
 - Mike Zheng
 - Cliff Harpole
 - Arka Banerjee
+- Ben Cowley
